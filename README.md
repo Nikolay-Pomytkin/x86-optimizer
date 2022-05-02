@@ -8,6 +8,7 @@ You can install all the packages required to run my project with `pip3 install -
 
 Used for this project:
 - [typer](github.com/tiangolo/typer)
+- [pyparsing]()
 
 ### How to use:
 
@@ -36,4 +37,4 @@ python3 base.py compile-run example.rkt
 ```
 
 
-#### 3. Compile and run both original and optimized code 
+#### 3. Compile and run both original and optimized code (and time the execution of both)
