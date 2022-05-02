@@ -7,8 +7,8 @@
 You can install all the packages required to run my project with `pip3 install -r requirements.txt`
 
 Used for this project:
-- [typer](github.com/tiangolo/typer)
-- [pyparsing]()
+- [typer](https://github.com/tiangolo/typer)
+- [pyparsing](https://github.com/pyparsing/pyparsing)
 
 ### How to use:
 

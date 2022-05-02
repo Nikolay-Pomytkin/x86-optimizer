@@ -15,20 +15,30 @@ def compile(
     optimization: bool = True,
     print_output: bool = False
 ):
+    # print intro message
     if optimization:
         typer.echo(f"Compiling {file_path} with optimization")
-        typer.echo("==========================================")
+        typer.echo("==========================================\n"*2)
     else:
         typer.echo(f"Compiling {file_path} without optimization")
-        typer.echo("==============================================")
+        typer.echo("=============================================\n"*2)
 
+    # run inputted file through inquity compiler
     compile_file = subprocess.run(
         ['racket', '-t', 'iniquity/compile-file.rkt', '-m', file_path],
         stdout=subprocess.PIPE
     )
 
-    if print_output and not optimization:
-        print(compile_file.stdout.decode())
+    # handle no optimization (just regular printing)
+    if not optimization:
+        if print_output:
+            typer.echo(compile_file.stdout.decode())
+            return
+        else:
+            typer.echo("not done yet")
+            return
+
+    ## time to optimize :) 
 
 
 @app.command()
