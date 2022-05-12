@@ -1,9 +1,11 @@
 import typer
 import subprocess
 from parser import parse
+from optimizer import optimize
 # from utils import *
 import os
-
+from pprint import pformat
+from utils import print_break_line
 
 app = typer.Typer()
 
@@ -30,10 +32,10 @@ def compile(
     typer.echo(
         "Compiling {} with{} optimization".format(
             file_path,
-            "out" if optimization else ""
+            "" if optimization else "out"
         )
     )
-    typer.echo("==========================================\n\n")
+    print_break_line()
 
     # run inputted file through inquity compiler
     compile_file = subprocess.run(
@@ -51,9 +53,13 @@ def compile(
             return
 
     # time to optimize :)
-    optimized = parse(compile_file.stdout.decode())
+    parsed = parse(compile_file.stdout.decode())
+    optimized = optimize(parsed)
     if print_output:
-        typer.echo(optimized)
+        print('program length before optimization: ' + str(len(parsed)))
+        print('program length after optimization: ' + str(len(optimized)))
+        print_break_line()
+        typer.echo(pformat(optimized))
     else:
         # output to file:
         pass
@@ -66,3 +72,4 @@ def compile_run():
 
 if __name__ == "__main__":
     app()
+

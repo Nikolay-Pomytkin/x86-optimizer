@@ -4,9 +4,13 @@ LABEL = pp.Word(pp.alphas+"_", pp.alphanums+"_") + ":"
 EXTERN = "extern" + pp.Word(pp.alphas+"_")
 RET = "ret"
 SECTION = "section" + pp.Word(pp.alphas+'.')
-COMMAND = pp.Word(pp.alphas) + pp.Word(pp.alphas+"_") + pp.Optional(
-    "," + pp.Word(pp.alphas+"_")
+WORD = pp.Word(pp.alphanums+"_") ^ pp.Regex(r'\[[A-za-z]+ \+ [0-9]+\]')
+COMMAND = pp.Word(pp.alphanums) + WORD + pp.Optional(
+    "," + WORD
 )
+REGISTER = None
+
+# TOTAL PARSING GRAMMER
 PARSER = LABEL ^ COMMAND ^ EXTERN ^ SECTION ^ RET
 
 
