@@ -1,5 +1,8 @@
 # import enum
 
+from operator import add
+
+
 ADD_STACK_POINTER = ['add', 'rsp', ',', '8']
 
 
@@ -48,7 +51,19 @@ def optimize(prog: list[str]) -> dict:
                     else:
                         next_line[3] = register
                         optimized[i+1] = next_line
-
+    # rsp pointer adds optimization
+    prog = optimized.copy()
+    for i, line in enumerate(prog):
+        if line == ADD_STACK_POINTER:
+            add_bits = 8
+            while optimized[i+1] == ADD_STACK_POINTER:
+                add_bits += 8
+                del(optimized[i+1])
+                del(prog[i+1])
+                output['lines_removed'] += 1
+            line[3] = str(add_bits)
+            optimized[i] = line
+            print(f'line {i}: added {add_bits} to stack pointer movement')
     # STATIC COMPUTE OPTIMIZATION
     prog = optimized.copy()
     for i, line in enumerate(prog):

@@ -6,6 +6,8 @@ from optimizer import optimize
 import os
 from pprint import pformat
 from utils import print_break_line
+from os import listdir
+from os.path import isfile, join
 
 app = typer.Typer()
 
@@ -57,13 +59,29 @@ def compile(
     optimized = optimize(parsed)
     if print_output:
         print('program length before optimization: ' + str(len(parsed)))
-        print('program length after optimization: ' + str(len(optimized['program'])))
+        optimized_len = str(len(optimized['program']))
+        print('program length after optimization: ' + optimized_len)
         print_break_line()
         typer.echo(pformat(optimized) + "\n")
     else:
         # output to file:
+        # make folder with same name as file with dot replaced with "_"
+
+        # put both unoptimized and optimized file into that folder
+        
         pass
 
+
+@app.command()
+def compile_folder(folder_path: str, print_output: bool = False):
+    files = [
+        join(folder_path, f)
+        for f in listdir(folder_path) if isfile(join(folder_path, f))
+    ]
+    print(files)
+    for f in files:
+        compile(f, optimization=True, print_output=print_output)
+        compile(f, optimization=False, print_output=print_output)
 
 @app.command()
 def compile_run():
@@ -72,4 +90,3 @@ def compile_run():
 
 if __name__ == "__main__":
     app()
-

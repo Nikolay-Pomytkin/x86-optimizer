@@ -30,11 +30,11 @@ To compile with optimization and print output to console (without saving to file
 python3 base.py compile example.rkt --print
 ```
 
-#### 2. Compile and run a file:
+#### 2. Compile all .rkt files in a folder and output optimized and unoptimized assembly in subfolder
+
+
+#### 3. Compile and run a file:
 
 ```
 python3 base.py compile-run example.rkt
 ```
-
-
-#### 3. Compile and run both original and optimized code (and time the execution of both)
