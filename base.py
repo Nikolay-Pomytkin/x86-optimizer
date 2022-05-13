@@ -57,9 +57,9 @@ def compile(
     optimized = optimize(parsed)
     if print_output:
         print('program length before optimization: ' + str(len(parsed)))
-        print('program length after optimization: ' + str(len(optimized)))
+        print('program length after optimization: ' + str(len(optimized['program'])))
         print_break_line()
-        typer.echo(pformat(optimized))
+        typer.echo(pformat(optimized) + "\n")
     else:
         # output to file:
         pass
