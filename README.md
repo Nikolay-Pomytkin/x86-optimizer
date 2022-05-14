@@ -139,3 +139,9 @@ gets optimized to:
 ```
 add rsp, 24
 ```
+
+
+#### Outtakes:
+In hindsight, not 100% sure writing this in python was the best idea, but it was a lot of fun. Getting the main "infrastructure" setup was the biggest challenge.
+I think the way I set up my code would allow me to pretty easily add more optimizations if I had more time (and more insight on what kind of better optimizations I could make),
+but I learned a ton from this project nonetheless!

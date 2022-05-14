@@ -22,12 +22,16 @@ def program_to_string(prog: list[list[str]]) -> str:
     return "\n".join(map(line_to_str, prog))
 
 
-def save_program(file_path: str, program: str):
+def save_program(file_path: str, program: str, optimized: bool = False):
     # make folder with same name as file with dot replaced with "_"
     file_path = file_path.split('.')
-    file_path[len(file_path)-1] = '.s'
+    if not optimized:
+        file_path[len(file_path)-1] = '.s'
+    else: 
+        file_path[len(file_path)-1] = '_optimized.s'
     file_path = ''.join(file_path)
     # put both unoptimized and optimized file into that foldee
     file = open(file_path, "w")
     file.write(program)
     file.close()
+

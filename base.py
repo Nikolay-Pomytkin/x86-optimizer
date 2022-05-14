@@ -69,7 +69,7 @@ def compile(
         typer.echo(output + "\n")
     else:
         # OUTPUT TO FILE:
-        save_program(file_path, output)
+        save_program(file_path, output, optimized=True)
 
 
 @app.command()
