@@ -4,8 +4,11 @@ from parser import parse
 from optimizer import optimize
 # from utils import *
 import os
-from pprint import pformat
-from utils import print_break_line
+from utils import (
+    print_break_line,
+    program_to_string,
+    save_program
+)
 from os import listdir
 from os.path import isfile, join
 
@@ -51,25 +54,22 @@ def compile(
             typer.echo(compile_file.stdout.decode())
             return
         else:
-            typer.echo("not done yet")
+            save_program(file_path, compile_file.stdout.decode())
             return
 
     # time to optimize :)
     parsed = parse(compile_file.stdout.decode())
     optimized = optimize(parsed)
+    output = program_to_string(optimized['program'])
+    print('program length before optimization: ' + str(len(parsed)))
+    optimized_len = str(len(optimized['program']))
+    print('program length after optimization: ' + optimized_len)
     if print_output:
-        print('program length before optimization: ' + str(len(parsed)))
-        optimized_len = str(len(optimized['program']))
-        print('program length after optimization: ' + optimized_len)
         print_break_line()
-        typer.echo(pformat(optimized) + "\n")
+        typer.echo(output + "\n")
     else:
-        # output to file:
-        # make folder with same name as file with dot replaced with "_"
-
-        # put both unoptimized and optimized file into that folder
-        
-        pass
+        # OUTPUT TO FILE:
+        save_program(file_path, output)
 
 
 @app.command()
@@ -83,9 +83,64 @@ def compile_folder(folder_path: str, print_output: bool = False):
         compile(f, optimization=True, print_output=print_output)
         compile(f, optimization=False, print_output=print_output)
 
+
 @app.command()
-def compile_run():
-    typer.echo("in development")
+def compile_run(file_path: str, optimization: bool = True):
+    # check if input file exists
+    if not os.path.exists(file_path):
+        typer.echo(
+            f"Failed to locate file at path: {file_path}",
+            err=True,
+        )
+        return
+    filepath_split = file_path.split('/')
+    filename = filepath_split[-1]
+    file_no_ext = filename.split('.')[0]
+    print("filename: "+ filename)
+    print('no extension: '+ file_no_ext)
+    if not optimization:
+        subprocess.run(
+            ['cp', file_path, 'iniquity/'+filename],
+        )
+        # result = subprocess.run(
+        #     ['cd', 'iniquity', '&&', 'make', file_no_ext+'.run']
+        # )
+        os.system('cd iniquity && make {}.run'.format(file_no_ext))
+        print_break_line()
+        os.system('./iniquity/'+file_no_ext+'.run')
+    else:
+        command0 = 'cd iniquity && make clean'
+        os.system(command0)
+        # run inputted file through inquity compiler
+        compile_file = subprocess.run(
+            ['racket', '-t', 'iniquity/compile-file.rkt', '-m', file_path],
+            stdout=subprocess.PIPE
+        )
+        parsed = parse(compile_file.stdout.decode())
+        optimized = optimize(parsed)
+        output = program_to_string(optimized['program'])
+        # print("OUTPUT:")
+        # print(output)
+
+        # file = open("iniquity/{}.s".format(file_no_ext), "w")
+        # file.write(output)
+        save_program(f'iniquity/{file_no_ext}.rkt', output)
+        os.system('cd iniquity && gcc -fPIC -c -g -o main.o main.c')
+        os.system('cd iniquity && gcc -fPIC -c -g -o values.o values.c')
+        os.system('cd iniquity && gcc -fPIC -c -g -o print.o print.c')
+        os.system('cd iniquity && gcc -fPIC -c -g -o io.o io.c')
+        os.system('cd iniquity && ld -r main.o values.o print.o io.o -o runtime.o')
+        command1 = f'cd iniquity && nasm -g -f macho64 -o {file_no_ext}.o {file_no_ext}.s'
+        command2 = f'cd iniquity && gcc runtime.o {file_no_ext}.o -o {file_no_ext}.run'
+        command3 = f'./iniquity/{file_no_ext}.run'
+        print(command1)
+        os.system(command1)
+        print(command2)
+        os.system(command2)
+        print(command3)
+        print_break_line()
+        os.system(command3)
+        # os.system('cd iniquity && rm {}.o {}.s'.format(file_no_ext, file_no_ext))
 
 
 if __name__ == "__main__":

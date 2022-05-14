@@ -1,17 +1,19 @@
 import pyparsing as pp
 
-LABEL = pp.Word(pp.alphas+"_", pp.alphanums+"_") + ":"
-EXTERN = "extern" + pp.Word(pp.alphas+"_")
+LABEL = pp.Word(pp.alphas+"_"+"?", pp.alphanums+"_"+"?") + ":"
+EXTERN = "extern" + pp.Word(pp.alphas+"_"+"?", pp.alphanums+"_"+"?")
 RET = "ret"
 SECTION = "section" + pp.Word(pp.alphas+'.')
-WORD = pp.Word(pp.alphanums+"_") ^ pp.Regex(r'\[[A-za-z]+ \+ [0-9]+\]')
-COMMAND = pp.Word(pp.alphanums) + WORD + pp.Optional(
+WORD = pp.Word(pp.alphanums+"_"+"?", pp.alphanums+"_"+"?") ^ pp.Regex(r'\[[A-za-z]+ \+ [0-9]+\]') ^ pp.Regex(r'\[[A-za-z]+ [0-9\_]+\]')
+COMMAND = pp.Word(pp.alphanums+"?", pp.alphanums+"_"+"?") + WORD + pp.Optional(
     "," + WORD
 )
+LEA = pp.Regex(r'lea [A-Za-z]+, \[.+\]')
+COMMAND_TTL = COMMAND ^ LEA
 REGISTER = None
 
 # TOTAL PARSING GRAMMER
-PARSER = LABEL ^ COMMAND ^ EXTERN ^ SECTION ^ RET
+PARSER = LABEL ^ COMMAND_TTL ^ EXTERN ^ SECTION ^ RET
 
 
 def parse(program: str) -> list[str]:
